@@ -1,0 +1,91 @@
+name: "SocialNet"
+layer {
+  name: "pinsoro_dataset"
+  type: "Python"
+  top: "socialfeatures"
+  top: "labels"
+  include {
+    phase: TRAIN
+  }
+  python_param {
+    module: "python_layers.PInSoRoDataset"
+    layer: "PInSoRoDatasetLayer"
+    param_str: "{\'dataset\': \'/home/slemaignan/datasets/pinsoro/mock-data/2017-06-26-144602575734', \'batch_size\': 256, \'timesteps\': 30}"
+  }
+}
+#layer {
+#  name: "visualtracking_dataset"
+#  type: "Python"
+#  top: "bodyfeatures"
+#  top: "targetposes"
+#  include {
+#    phase: TEST
+#  }
+#  python_param {
+#    module: "python_layers.VisualTrackingData"
+#    layer: "VisualTrackingLayer"
+#    param_str: "{\'source\': \'visual_tracking_full_dataset.test.json\', \'batch_size\': 256}"
+#  }
+#}
+
+# data shape: nb observations (ie timesteps) X batch size X data dimension
+#input: "data"
+#input_shape { dim: 30 dim: 64 dim: 64 }
+
+# clip shape: nb observations (ie timesteps) X batch size
+input: "clip"
+input_shape { dim: 30 dim: 64 }
+
+# label shape: nb observations (ie timesteps) X label dim (1)
+#input: "label"
+#input_shape { dim: 30 dim: 1 }
+
+layer {
+  name: "Silence"
+  type: "Silence"
+  bottom: "labels"
+  include: { phase: TEST }
+}
+layer {
+  name: "lstm1"
+  type: "LSTM"
+  bottom: "socialfeatures"
+  bottom: "clip"
+  top: "lstm1"
+
+  recurrent_param {
+    num_output: 15
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "fc1"
+  type: "InnerProduct"
+  bottom: "lstm1"
+  top: "fc1"
+
+  inner_product_param {
+    num_output: 1
+    weight_filler {
+      type: "gaussian"
+      std: 0.1
+    }
+    bias_filler {
+      type: "constant"
+    }
+  }
+}
+layer {
+  name: "loss"
+  type: "EuclideanLoss"
+  bottom: "fc1"
+  bottom: "labels"
+  top: "loss"
+  include: { phase: TRAIN }
+}

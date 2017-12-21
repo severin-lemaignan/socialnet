@@ -1,0 +1,23 @@
+<package>
+  <name>socialnet</name>
+  <version>0.1.0</version>
+  <description>DeepNet for social situation recognition</description>
+  <maintainer email="severin.lemaignan@plymouth.ac.uk">Séverin Lemaignan</maintainer>
+
+  <license>BSD</license>
+
+  <author>Séverin Lemaignan</author>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>rosbag</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>tf2</build_depend>
+  <build_depend>visualization_msgs</build_depend>
+  <build_depend>sensor_msgs</build_depend>
+  <build_depend>cv_bridge</build_depend>
+  <build_depend>image_geometry</build_depend>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <run_depend>rosbag</run_depend>
+</package>
